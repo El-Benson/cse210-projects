@@ -79,4 +79,6 @@ class Program {
     }
 }
 
+// In this example, the MindfulnessActivity class encapsulates common behavior for all activities, such as displaying starting and ending messages and handling activity duration. Each specific activity class, like BreathingActivity, ReflectionActivity, and ListingActivity, inherits from MindfulnessActivity and overrides the PerformActivity method to implement activity-specific behavior. This encapsulation ensures clean code organization, promotes code reusability, and facilitates maintenance and scalability.
+
 
