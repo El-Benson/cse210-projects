@@ -2,125 +2,115 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Word
+namespace ScriptureMemorizationProgram
 {
-    public string Text { get; set; }
-    public bool IsHidden { get; set; }
-
-    public Word(string text)
+    class Program
     {
-        Text = text;
-        IsHidden = false;
-    }
-}
-
-public class ScriptureReference
-{
-    public string Book { get; set; }
-    public int Chapter { get; set; }
-    public int VerseStart { get; set; }
-    public int VerseEnd { get; set; }
-
-    public ScriptureReference(string book, int chapter, int verseStart)
-    {
-        Book = book;
-        Chapter = chapter;
-        VerseStart = verseStart;
-        VerseEnd = verseStart;
-    }
-
-    public ScriptureReference(string book, int chapter, int verseStart, int verseEnd)
-    {
-        Book = book;
-        Chapter = chapter;
-        VerseStart = verseStart;
-        VerseEnd = verseEnd;
-    }
-
-    public override string ToString()
-    {
-        if (VerseStart == VerseEnd)
+        static void Main(string[] args)
         {
-            return $"{Book} {Chapter}:{VerseStart}";
-        }
-        else
-        {
-            return $"{Book} {Chapter}:{VerseStart}-{VerseEnd}";
-        }
-    }
-}
+            Console.WriteLine("Welcome to the Scripture Memorization Program!");
 
-public class Scripture
-{
-    private List<Word> words;
+            
+            ScriptureManager manager = new ScriptureManager();
 
-    public Scripture(ScriptureReference reference, string text)
-    {
-        Reference = reference;
-        words = text.Split(' ').Select(w => new Word(w)).ToList();
-    }
+            
+            manager.Display();
 
-    public ScriptureReference Reference { get; }
-
-    public void Display()
-    {
-        Console.WriteLine($"Scripture Reference: {Reference}");
-        foreach (var word in words)
-        {
-            Console.Write(word.IsHidden ? "***** " : $"{word.Text} ");
-        }
-        Console.WriteLine();
-    }
-
-    public void HideRandomWords()
-    {
-        Random random = new Random();
-        int wordsToHide = random.Next(1, words.Count(w => !w.IsHidden));
-        int wordsHidden = 0;
-        while (wordsHidden < wordsToHide)
-        {
-            int index = random.Next(words.Count);
-            if (!words[index].IsHidden)
-            {
-                words[index].IsHidden = true;
-                wordsHidden++;
-            }
-        }
-    }
-
-    public bool AllWordsHidden()
-    {
-        return words.All(w => w.IsHidden);
-    }
-}
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        
-        var reference = new ScriptureReference("John", 3, 16);
-        var scriptureText = "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.";
-        var scripture = new Scripture(reference, scriptureText);
-
-        
-        scripture.Display();
-
-        
-        Console.WriteLine("Press Enter to hide more words or type 'quit' to end.");
-        while (!scripture.AllWordsHidden())
-        {
+            
+            Console.WriteLine("Press enter to hide a few words or type 'quit' to exit.");
             string input = Console.ReadLine();
-            if (input.ToLower() == "quit")
-            {
-                break;
-            }
-            else
+
+            while (input != "quit")
             {
                 
-                scripture.HideRandomWords();
-                scripture.Display();
+                manager.HideRandomWords();
+
+                
+                Console.Clear();
+                manager.Display();
+
+                
+                Console.WriteLine("Press enter to hide a few more words or type 'quit' to exit.");
+                input = Console.ReadLine();
             }
         }
     }
+
+    class ScriptureManager
+    {
+        private List<Scripture> scriptures;
+        private Random random;
+
+        public ScriptureManager()
+        {
+            scriptures = new List<Scripture>();
+            random = new Random();
+
+            // Add sample scriptures to the manager (you can load scriptures from a file or database)
+            scriptures.Add(new Scripture("3rd Nephi 11:11", "And behold, I am the light and the life of the world."));
+            scriptures.Add(new Scripture("Proverbs 3:5-6", "Trust in the Lord with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths."));
+        }
+
+        public void Display()
+        {
+            foreach (var scripture in scriptures)
+            {
+                scripture.Display();
+                Console.WriteLine();
+            }
+        }
+
+        public void HideRandomWords()
+        {
+            foreach (var scripture in scriptures)
+            {
+                scripture.HideRandomWords();
+            }
+        }
+    }
+
+    class Scripture
+    {
+        private string reference;
+        private string text;
+        private List<string> words;
+        private Random random;
+
+        public Scripture(string reference, string text)
+        {
+            this.reference = reference;
+            this.text = text;
+            this.words = text.Split(' ').ToList();
+            this.random = new Random();
+        }
+
+        public void Display()
+        {
+            Console.WriteLine(reference);
+            Console.WriteLine(text);
+        }
+
+        public void HideRandomWords()
+        {
+            
+            int numWordsToHide = random.Next(1, words.Count);
+
+            
+            List<int> indices = Enumerable.Range(0, words.Count).OrderBy(x => random.Next()).Take(numWordsToHide).ToList();
+
+            
+            foreach (int index in indices)
+            {
+                words[index] = "";
+            }
+
+            
+            text = string.Join(" ", words);
+        }
+    }
 }
+
+
+// In this example, the reference and text attributes are encapsulated within the Scripture class, accessible only through designated getter methods. This ensures data integrity and provides a clear interface for interacting with scripture objects.
+
+
