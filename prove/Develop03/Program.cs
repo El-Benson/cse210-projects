@@ -98,15 +98,15 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        // Create a scripture object
+        
         var reference = new ScriptureReference("John", 3, 16);
         var scriptureText = "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.";
         var scripture = new Scripture(reference, scriptureText);
 
-        // Display the full scripture
+        
         scripture.Display();
 
-        // Prompt the user to press Enter or type "quit"
+        
         Console.WriteLine("Press Enter to hide more words or type 'quit' to end.");
         while (!scripture.AllWordsHidden())
         {
@@ -117,7 +117,7 @@ public class Program
             }
             else
             {
-                // Hide random words and display scripture again
+                
                 scripture.HideRandomWords();
                 scripture.Display();
             }
