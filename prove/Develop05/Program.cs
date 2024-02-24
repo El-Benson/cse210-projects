@@ -131,3 +131,5 @@ class EternalQuest {
         }
     }
 }
+
+// This C# code implements an "Eternal Quest" program to track various types of goals, including simple goals, eternal goals, and checklist goals. It utilizes inheritance, polymorphism, encapsulation, and abstraction to ensure a well-structured and extensible design. The program allows users to add goals, record events, display goals and scores, and save/load progress. Additionally, it includes the functionality to handle different types of goals and their completion criteria.
