@@ -1,28 +1,27 @@
 using System;
 
-namespace GuessMyNumber
+class Program
 {
-    class Program
+    static void Main()
     {
-        static void Main(string[] args)
+        Random random = new Random();
+        bool playAgain = true;
+
+        while (playAgain)
         {
-            Random random = new Random();
-
-            
+    
             int magicNumber = random.Next(1, 101);
-
-            int guess;
+            int guess = 0;
             int attempts = 0;
 
-            
-            do
+            Console.WriteLine("I have selected a magic number between 1 and 100.");
+
+            while (guess != magicNumber)
             {
-                
-                Console.WriteLine("What is your guess?");
-                guess = Convert.ToInt32(Console.ReadLine());
+                Console.Write("What is your guess? ");
+                guess = int.Parse(Console.ReadLine());
                 attempts++;
 
-                
                 if (guess < magicNumber)
                 {
                     Console.WriteLine("Higher");
@@ -35,20 +34,14 @@ namespace GuessMyNumber
                 {
                     Console.WriteLine("You guessed it!");
                 }
-            } while (guess != magicNumber);
-
-            
+            }
             Console.WriteLine($"You made {attempts} guesses.");
 
-            
-            Console.WriteLine("Do you want to play again? (yes/no)");
-            string playAgain = Console.ReadLine().ToLower();
-
-            
-            if (playAgain == "yes")
-            {
-                Main(args);
-            }
+            Console.Write("Do you want to play again? (yes/no): ");
+            string response = Console.ReadLine().ToLower();
+            playAgain = response == "yes";
         }
+
+        Console.WriteLine("Thanks for playing!");
     }
 }
