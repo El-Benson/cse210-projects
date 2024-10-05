@@ -46,7 +46,7 @@ namespace ScriptureMemorizationProgram
             scriptures = new List<Scripture>();
             random = new Random();
 
-            // Add sample scriptures to the manager (you can load scriptures from a file or database)
+    
             scriptures.Add(new Scripture("3rd Nephi 11:11", "And behold, I am the light and the life of the world."));
             scriptures.Add(new Scripture("Proverbs 3:5-6", "Trust in the Lord with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths."));
         }
@@ -111,6 +111,5 @@ namespace ScriptureMemorizationProgram
 }
 
 
-// In this example, the reference and text attributes are encapsulated within the Scripture class, accessible only through designated getter methods. This ensures data integrity and provides a clear interface for interacting with scripture objects.
 
 
