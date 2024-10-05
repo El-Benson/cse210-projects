@@ -46,7 +46,6 @@ namespace ScriptureMemorizationProgram
             scriptures = new List<Scripture>();
             random = new Random();
 
-    
             scriptures.Add(new Scripture("3rd Nephi 11:11", "And behold, I am the light and the life of the world."));
             scriptures.Add(new Scripture("Proverbs 3:5-6", "Trust in the Lord with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths."));
         }
@@ -108,8 +107,3 @@ namespace ScriptureMemorizationProgram
             text = string.Join(" ", words);
         }
     }
-}
-
-
-
-
