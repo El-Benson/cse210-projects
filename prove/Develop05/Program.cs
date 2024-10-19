@@ -1,135 +1,194 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Threading;
 
-class Goal {
-    protected string name;
-    protected int value;
-    protected bool completed;
+namespace MindfulnessApp
+{
+    
+    abstract class MindfulnessActivity
+    {
+        protected string ActivityName;
+        protected string Description;
+        protected int Duration;
 
-    public Goal(string name) {
-        this.name = name;
-        this.value = 0;
-        this.completed = false;
-    }
-
-    public virtual void RecordEvent() {
-        value++;
-    }
-
-    public virtual void CompleteGoal() {
-        completed = true;
-    }
-
-    public override string ToString() {
-        string status = completed ? "Completed" : "Incomplete";
-        return $"{name} - {status} | Value: {value}";
-    }
-}
-
-class SimpleGoal : Goal {
-    public SimpleGoal(string name) : base(name) { }
-
-    public override void RecordEvent() {
-        base.RecordEvent();
-    }
-}
-
-class EternalGoal : Goal {
-    public EternalGoal(string name) : base(name) { }
-}
-
-class ChecklistGoal : Goal {
-    private int targetCount;
-    private int bonusPoints;
-
-    public ChecklistGoal(string name, int targetCount, int bonusPoints) : base(name) {
-        this.targetCount = targetCount;
-        this.bonusPoints = bonusPoints;
-    }
-
-    public override void RecordEvent() {
-        base.RecordEvent();
-        if (value == targetCount) {
-            value += bonusPoints;
-            completed = true;
+        public virtual void StartActivity()
+        {
+            Console.WriteLine($"Starting {ActivityName}...");
+            Console.WriteLine(Description);
+            Console.Write("Enter duration in seconds: ");
+            Duration = int.Parse(Console.ReadLine());
+            Console.WriteLine("Prepare to begin...");
+            Pause(3);
         }
-    }
-}
 
-class EternalQuest {
-    private List<Goal> goals;
-    private int score;
-
-    public EternalQuest() {
-        goals = new List<Goal>();
-        score = 0;
-    }
-
-    public void AddGoal(Goal goal) {
-        goals.Add(goal);
-    }
-
-    public void RecordEvent(int index) {
-        goals[index].RecordEvent();
-        UpdateScore();
-    }
-
-    private void UpdateScore() {
-        score = goals.Sum(g => g.value);
-    }
-
-    public void DisplayGoals() {
-        foreach (var goal in goals) {
-            Console.WriteLine(goal);
+        public virtual void EndActivity()
+        {
+            Console.WriteLine($"Good job! You have completed the {ActivityName} for {Duration} seconds.");
+            Pause(3);  
         }
-    }
 
-    public void DisplayScore() {
-        Console.WriteLine($"Current Score: {score}");
-    }
-
-    public void SaveProgress(string filename) {
-        using (StreamWriter writer = new StreamWriter(filename)) {
-            foreach (var goal in goals) {
-                writer.WriteLine($"{goal.GetType().Name},{goal}");
+        protected void Pause(int seconds)
+        {
+            for (int i = 0; i < seconds; i++)
+            {
+                Console.Write(".");
+                Thread.Sleep(1000);
             }
-            writer.WriteLine($"Score,{score}");
+            Console.WriteLine();
+        }
+
+        public abstract void PerformActivity();  // Must be implemented by subclasses
+    }
+
+    
+    class BreathingActivity : MindfulnessActivity
+    {
+        public BreathingActivity()
+        {
+            ActivityName = "Breathing Activity";
+            Description = "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.";
+        }
+
+        public override void PerformActivity()
+        {
+            StartActivity();
+            int halfDuration = Duration / 2;
+
+            for (int i = 0; i < halfDuration; i++)
+            {
+                Console.WriteLine("Breathe in...");
+                Pause(3);
+                Console.WriteLine("Breathe out...");
+                Pause(3);
+
+
+            EndActivity();
         }
     }
 
-    public void LoadProgress(string filename) {
-        goals.Clear();
-        using (StreamReader reader = new StreamReader(filename)) {
-            string line;
-            while ((line = reader.ReadLine()) != null) {
-                string[] parts = line.Split(',');
-                if (parts[0] == "SimpleGoal") {
-                    SimpleGoal goal = new SimpleGoal(parts[1]);
-                    goal.RecordEvent();
-                    goals.Add(goal);
-                } else if (parts[0] == "EternalGoal") {
-                    EternalGoal goal = new EternalGoal(parts[1]);
-                    goal.RecordEvent();
-                    goals.Add(goal);
-                } else if (parts[0] == "ChecklistGoal") {
-                    string[] goalInfo = parts[1].Split('|');
-                    string name = goalInfo[0];
-                    string status = goalInfo[1].Split('-')[1].Trim();
-                    int value = int.Parse(goalInfo[2].Split(':')[1]);
-                    ChecklistGoal goal = new ChecklistGoal(name, 0, 0);
-                    goal.RecordEvent();
-                    if (status == "Completed") {
-                        goal.CompleteGoal();
-                    }
-                    goals.Add(goal);
-                } else if (parts[0] == "Score") {
-                    score = int.Parse(parts[1]);
+    
+    class ReflectionActivity : MindfulnessActivity
+    {
+        private List<string> Prompts = new List<string>
+        {
+            "Think of a time when you stood up for someone else.",
+            "Think of a time when you did something really difficult.",
+            "Think of a time when you helped someone in need.",
+            "Think of a time when you did something truly selfless."
+        };
+
+        private List<string> Questions = new List<string>
+        {
+            "Why was this experience meaningful to you?",
+            "Have you ever done anything like this before?",
+            "How did you get started?",
+            "How did you feel when it was complete?",
+            "What made this time different than other times when you were not as successful?",
+            "What is your favorite thing about this experience?",
+            "What could you learn from this experience that applies to other situations?",
+            "What did you learn about yourself through this experience?",
+            "How can you keep this experience in mind in the future?"
+        };
+
+        private Random random = new Random();
+
+        public ReflectionActivity()
+        {
+            ActivityName = "Reflection Activity";
+            Description = "This activity will help you reflect on times in your life when you have shown strength and resilience.";
+        }
+
+        public override void PerformActivity()
+        {
+            StartActivity();
+            Console.WriteLine(Prompts[random.Next(Prompts.Count)]);
+
+            int totalQuestions = Duration / 7;  // Roughly 7 seconds per question
+            for (int i = 0; i < totalQuestions; i++)
+            {
+                Console.WriteLine(Questions[random.Next(Questions.Count)]);
+                Pause(5);
+            }
+
+            EndActivity();
+        }
+    }
+
+    
+    class ListingActivity : MindfulnessActivity
+    {
+        private List<string> Prompts = new List<string>
+        {
+            "Who are people that you appreciate?",
+            "What are personal strengths of yours?",
+            "Who are people that you have helped this week?",
+            "When have you felt joy this month?",
+            "Who are some of your personal heroes?"
+        };
+
+        private Random random = new Random();
+
+        public ListingActivity()
+        {
+            ActivityName = "Listing Activity";
+            Description = "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.";
+        }
+
+        public override void PerformActivity()
+        {
+            StartActivity();
+            Console.WriteLine(Prompts[random.Next(Prompts.Count)]);
+            Pause(3); 
+
+            Console.WriteLine("Start listing items. Type 'done' to finish:");
+            List<string> items = new List<string>();
+            string input;
+            while ((input = Console.ReadLine()) != "done")
+            {
+                items.Add(input);
+            }
+
+            Console.WriteLine($"You listed {items.Count} items.");
+            EndActivity();
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.WriteLine("\nChoose an activity:");
+                Console.WriteLine("1. Breathing Activity");
+                Console.WriteLine("2. Reflection Activity");
+                Console.WriteLine("3. Listing Activity");
+                Console.WriteLine("4. Exit");
+
+                string choice = Console.ReadLine();
+
+                MindfulnessActivity activity = null;
+
+                switch (choice)
+                {
+                    case "1":
+                        activity = new BreathingActivity();
+                        break;
+                    case "2":
+                        activity = new ReflectionActivity();
+                        break;
+                    case "3":
+                        activity = new ListingActivity();
+                        break;
+                    case "4":
+                        return;  
+                    default:
+                        Console.WriteLine("Invalid choice. Please select again.");
+                        continue;
                 }
+
+                activity.PerformActivity();
             }
         }
     }
 }
-
-// This C# code implements an "Eternal Quest" program to track various types of goals, including simple goals, eternal goals, and checklist goals. It utilizes inheritance, polymorphism, encapsulation, and abstraction to ensure a well-structured and extensible design. The program allows users to add goals, record events, display goals and scores, and save/load progress. Additionally, it includes the functionality to handle different types of goals and their completion criteria.
